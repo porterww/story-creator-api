@@ -9,6 +9,8 @@
   "author": "Porter Webster",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "joi": "^13.7.0",
+    "monk": "^6.0.6"
   }
 }
