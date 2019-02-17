@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const bodyParser = require('body-parser')
 const app = express()
 const port = 2018
@@ -10,18 +11,21 @@ const StoriesCollection = db.get('stories')
 const Joi = require('joi')
 
 app.use(bodyParser.json())
-
+app.use(cors())
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*')
-    res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS')
-    res.header('Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization')
-    next()
-   })
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  )
+  next()
+})
 
 // let StoriesArr=[]
 
 app.get('/stories', async (req, res) => {
+  res.json({msg: 'This is CORS-enabled for all origins!'})
   try {
     const StoriesArr = await StoriesCollection.find({})
     res.send(StoriesArr)
@@ -32,10 +36,9 @@ app.get('/stories', async (req, res) => {
 })
 
 app.post('/stories', async (req, res) => {
-  const results = Joi.validate( req.body, schema)
+  const results = Joi.validate(req.body, schema)
   // result.error === null -> valid
-  if (results.error)
-  res.send(results.error)
+  if (results.error) res.send(results.error)
   else {
     try {
       await StoriesCollection.insert(req.body)
@@ -45,22 +48,50 @@ app.post('/stories', async (req, res) => {
       console.log(error)
       res.send(error)
     }
-  }})
-
-app.put('/stories', (req, res) => {
-        StoriesCollection.update({_id: req.body._id}, {$set: req.body}).then(
-         (e) => console.log(e)
-       ) .catch(e=>console.log(e)) 
-       res.send(req.body)
+  }
 })
 
-app.delete('/stories', (req, res) => res.send(`delete for ${req.query.name}`))
+app.put('/stories', (req, res) => {
+  StoriesCollection.update({ _id: req.body._id }, { $set: req.body })
+    .then(e => console.log(e))
+    .catch(e => console.log(e))
+  res.send(req.body)
+})
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+// app.delete('/stories/_id/', async (req, res) => {
+//   await StoriesCollection.remove({ _id: req.body._id })
+//   res.send(`delete for ${req.query.name}`)
+// })
+
+app.delete(`/stories-delete/{_id}/`, (req,res)=> {
+  StoriesCollection.update(req.params._id, () => {
+    StoriesCollection.remove(error => {
+      if(error){
+        res.status(500).send(error)
+      }
+      else {
+        res.status(204).send('removed')
+      }
+    })
+  })
+})
+
+app.listen(80, port, () => console.log(`Example app listening on port ${port}!`, `CORS-enabled web server listening on port ${80}`))
 //Line below are for Joi functions
 const schema = Joi.object().keys({
-  title: Joi.string().regex(/^[a-zA-Z0-9 ]{1,45}$/).required().label('Story Title field requires at least 3 characters, max 45. No Symbols'),
-  author: Joi.string().regex(/^[a-zA-Z ]{1,30}$/).required().label('Author field requires at least 3 characters, max 30. No Symbols.'),
-  genre: Joi.string().regex(/^[a-zA-Z ]{3,30}$/).required().label('Genre field requires at least 3 characters, max 30. No Symbols.'),
+  title: Joi.string()
+    .regex(/^[a-zA-Z0-9 ]{1,45}$/)
+    .required()
+    .label(
+      'Story Title field requires at least 3 characters, max 45. No Symbols'
+    ),
+  author: Joi.string()
+    .regex(/^[a-zA-Z ]{1,30}$/)
+    .required()
+    .label('Author field requires at least 3 characters, max 30. No Symbols.'),
+  genre: Joi.string()
+    .regex(/^[a-zA-Z ]{3,30}$/)
+    .required()
+    .label('Genre field requires at least 3 characters, max 30. No Symbols.'),
   story: Joi.string().required()
 })
