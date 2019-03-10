@@ -8,6 +8,7 @@ const db = monk(
   'mongodb://admin:L3tSMak3A$t0rY!1337!@ds030827.mlab.com:30827/story-creator-app'
 )
 const StoriesCollection = db.get('stories')
+// console.log('STORIES',StoriesCollection)
 const Joi = require('joi')
 
 app.use(bodyParser.json())
@@ -25,9 +26,10 @@ app.use((req, res, next) => {
 // let StoriesArr=[]
 
 app.get('/stories', async (req, res) => {
-  res.json({msg: 'This is CORS-enabled for all origins!'})
+  res.json({ msg: 'This is CORS-enabled for all origins!' })
   try {
     const StoriesArr = await StoriesCollection.find({})
+    console.log(StoriesArr)
     res.send(StoriesArr)
   } catch (error) {
     console.log(error)
@@ -63,20 +65,27 @@ app.put('/stories', (req, res) => {
 //   res.send(`delete for ${req.query.name}`)
 // })
 
-app.delete(`/stories-delete/{_id}/`, (req,res)=> {
+// app.delete(`/stories-delete/{_id}`, (req,res)=> {
+app.delete(`/stories-delete`, (req, res) => {
+  console.log(req.path)
   StoriesCollection.update(req.params._id, () => {
     StoriesCollection.remove(error => {
-      if(error){
-        res.status(500).send(error)
-      }
-      else {
-        res.status(204).send('removed')
+      if (error) {
+        console.log('error')
+      //   res.status(500).send(error)
+      // } else {
+        console.log('remove')
+      //   res.status(204).send('removed')
       }
     })
   })
 })
 
-app.listen(80, port, () => console.log(`Example app listening on port ${port}!`, `CORS-enabled web server listening on port ${80}`))
+app.listen(port, () =>
+  console.log(
+    /*`Example app listening on port ${port}!`,*/ `CORS-enabled web server listening on port ${port}`
+  )
+)
 //Line below are for Joi functions
 const schema = Joi.object().keys({
   title: Joi.string()
