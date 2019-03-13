@@ -12,7 +12,7 @@ const StoriesCollection = db.get('stories')
 const Joi = require('joi')
 
 app.use(bodyParser.json())
-app.use(cors())
+// app.use(cors())
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
   res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS')
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 // let StoriesArr=[]
 
 app.get('/stories', async (req, res) => {
-  res.json({ msg: 'This is CORS-enabled for all origins!' })
+  // res.json({ msg: 'This is CORS-enabled for all origins!' })
   try {
     const StoriesArr = await StoriesCollection.find({})
     console.log(StoriesArr)
@@ -60,26 +60,10 @@ app.put('/stories', (req, res) => {
   res.send(req.body)
 })
 
-// app.delete('/stories/_id/', async (req, res) => {
-//   await StoriesCollection.remove({ _id: req.body._id })
-//   res.send(`delete for ${req.query.name}`)
-// })
-
-// app.delete(`/stories-delete/{_id}`, (req,res)=> {
-app.delete(`/stories-delete`, (req, res) => {
-  console.log(req.path)
-  StoriesCollection.update(req.params._id, () => {
-    StoriesCollection.remove(error => {
-      if (error) {
-        console.log('error')
-      //   res.status(500).send(error)
-      // } else {
-        console.log('remove')
-      //   res.status(204).send('removed')
-      }
+app.delete(`/stories-delete/:_id`, async (req,res)=> {
+  StoriesCollection.remove(req.params._id)
+      res.send('success')
     })
-  })
-})
 
 app.listen(port, () =>
   console.log(
