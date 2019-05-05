@@ -1,6 +1,6 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
+const bcryptjs = require('bcryptjs')
 // const cors = require('cors')
 const {OAuth2Client} = require ('google-auth-library')
 const bodyParser = require('body-parser')
