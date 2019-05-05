@@ -9,12 +9,16 @@
   "author": "Porter Webster",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^3.0.4",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "google-auth-library": "^3.1.2",
     "joi": "^13.7.0",
     "jsonwebtoken": "^8.5.0",
-    "monk": "^6.0.6"
+    "monk": "^6.0.6",
+    "node": "^10.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.0"
   }
 }
